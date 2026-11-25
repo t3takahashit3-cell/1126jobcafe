@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>信濃クエスト 〜地元企業と労働法を攻略せよ〜</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --dq-bg: #000000;
+      --dq-win: #0b1120;
+      --dq-border: #ffffff;
+      --dq-gold: #facc15;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--dq-bg);
+      background-image:
+        radial-gradient(circle at 20% 15%, rgba(30, 58, 138, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 80% 85%, rgba(88, 28, 135, 0.22) 0%, transparent 45%);
+      color: #f8fafc;
+      font-family: 'DotGothic16', 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* クラシックRPG二重白枠ウィンドウ */
+    .rpg-window {
+      background: rgba(8, 13, 26, 0.96);
+      border: 3px solid #ffffff;
+      border-radius: 10px;
+      box-shadow:
+        inset 0 0 0 3px #000000,
+        inset 0 0 0 5px #cbd5e1,
+        0 8px 24px rgba(0, 0, 0, 0.85);
+      position: relative;
+    }
+
+    .rpg-window-gold {
+      background: rgba(8, 13, 26, 0.98);
+      border: 3px solid #facc15;
+      border-radius: 10px;
+      box-shadow:
+        inset 0 0 0 3px #000000,
+        inset 0 0 0 5px #ca8a04,
+        0 0 24px rgba(250, 204, 21, 0.35);
+      position: relative;
+    }
+
+    /* RPGコマンドボタン（スマホで押しやすいサイズ） */
+    .rpg-btn {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      color: #ffffff;
+      padding: 13px 16px;
+      font-family: 'DotGothic16', 'Noto Sans JP', sans-serif;
+      font-size: 1rem;
+      line-height: 1.45;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+    }
+
+    .rpg-btn:hover:not(:disabled),
+    .rpg-btn:active:not(:disabled) {
+      border-color: #facc15;
+      color: #fef08a;
+      background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+      transform: translateY(-1px);
+    }
+
+    .rpg-btn:disabled {
+      opacity: 0.32;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .rpg-btn-primary {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+      border: 3px solid #fef08a;
+      color: #090d16;
+      font-weight: 900;
+      text-align: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.45);
+    }
+
+    .rpg-btn-primary:hover:not(:disabled),
+    .rpg-btn-primary:active:not(:disabled) {
+      background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+      color: #000000;
+      transform: scale(1.02);
+    }
+
+    /* 企業HPリンクボタン */
+    .hp-link-btn {
+      background: linear-gradient(180deg, #0369a1 0%, #0c4a6e 100%);
+      border: 2px solid #38bdf8;
+      border-radius: 8px;
+      color: #ffffff;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 900;
+      font-size: 0.85rem;
+      padding: 0 12px;
+      min-width: 48px;
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .hp-link-btn:hover,
+    .hp-link-btn:active {
+      background: #0284c7;
+      border-color: #bae6fd;
+      color: #ffffff;
+    }
+
+    /* 魔物ダメージアニメーション */
+    @keyframes monsterShake {
+      0%, 100% { transform: translate(0, 0) scale(1); filter: brightness(1); }
+      18% { transform: translate(-14px, -6px) scale(0.96); filter: brightness(2.4) sepia(1) hue-rotate(-50deg) saturate(4); }
+      36% { transform: translate(14px, 5px) scale(1.04); filter: brightness(2); }
+      54% { transform: translate(-10px, 4px) scale(0.98); filter: brightness(2.4) sepia(1) hue-rotate(-50deg) saturate(4); }
+      72% { transform: translate(10px, -4px) scale(1.02); }
+    }
+
+    .monster-damage {
+      animation: monsterShake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+    }
+
+    /* 斬撃＆切断エフェクト */
+    .slash-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .slash-line {
+      position: absolute;
+      top: 50%;
+      left: -30%;
+      width: 160%;
+      height: 8px;
+      background: linear-gradient(90deg, transparent, #ffffff, #38bdf8, #ffffff, transparent);
+      box-shadow: 0 0 22px #38bdf8, 0 0 40px #ffffff;
+      transform: rotate(-28deg) scaleX(0);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    @keyframes slashStrike {
+      0% { transform: rotate(-28deg) scaleX(0); opacity: 1; }
+      45% { transform: rotate(-28deg) scaleX(1); opacity: 1; }
+      100% { transform: rotate(-28deg) scaleX(1.15); opacity: 0; }
+    }
+
+    .slash-active .slash-line {
+      animation: slashStrike 0.5s ease-out forwards;
+    }
+
+    @keyframes monsterSplitDefeat {
+      0% { transform: scale(1); filter: brightness(1); opacity: 1; }
+      25% { transform: scale(1.08); filter: brightness(3.5) contrast(2); opacity: 1; }
+      55% { transform: skewX(26deg) translateX(22px) scaleY(0.85); filter: brightness(1.8) hue-rotate(85deg) blur(2px); opacity: 0.7; }
+      100% { transform: skewX(-32deg) translateY(36px) scale(0.2); filter: blur(8px); opacity: 0; }
+    }
+
+    .monster-sliced {
+      animation: monsterSplitDefeat 0.9s ease-in-out forwards;
+    }
+
+    /* 大魔王フェードイン演出 */
+    @keyframes maouAppear {
+      0% { opacity: 0; transform: scale(0.65) translateY(24px); filter: brightness(0) drop-shadow(0 0 0px #a855f7); }
+      45% { opacity: 0.65; filter: brightness(0.45) drop-shadow(0 0 36px #9333ea); }
+      78% { opacity: 0.92; transform: scale(1.05) translateY(-4px); filter: brightness(1.5) drop-shadow(0 0 50px #ef4444); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: brightness(1) drop-shadow(0 0 22px #a855f7); }
+    }
+
+    .maou-fadein {
+      animation: maouAppear 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* プレイヤー被ダメージ時の画面揺れ */
+    @keyframes screenDamage {
+      0%, 100% { transform: translate(0, 0); background-color: var(--dq-bg); }
+      20% { transform: translate(-10px, 6px); background-color: rgba(185, 28, 28, 0.45); }
+      45% { transform: translate(10px, -6px); background-color: rgba(185, 28, 28, 0.25); }
+      70% { transform: translate(-6px, -4px); }
+    }
+
+    .player-damaged {
+      animation: screenDamage 0.4s ease-in-out;
+    }
+
+    /* 商人ステージ：契約書（巻物デザイン） */
+    .contract-scroll {
+      background: #fef3c7;
+      background-image: radial-gradient(#fde68a 1px, transparent 1px);
+      background-size: 14px 14px;
+      color: #1c1917;
+      border: 5px double #78350f;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+      font-family: 'Noto Sans JP', serif;
+    }
+
+    .contract-item {
+      position: relative;
+      cursor: pointer;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 2px dashed #a8a29e;
+      transition: all 0.12s ease;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .contract-item.circled {
+      background: rgba(254, 226, 226, 0.9);
+      border: 2px solid #dc2626;
+    }
+
+    .red-circle-mark {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-3deg);
+      width: 94%;
+      height: 86%;
+      border: 4px solid #dc2626;
+      border-radius: 50% 45% 52% 48%;
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
+      pointer-events: none;
+    }
+
+    .contract-item.circled .red-circle-mark {
+      display: block;
+    }
+
+    /* エンディング紙吹雪＆キラキラ */
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+    }
+
+    .confetti {
+      position: fixed;
+      top: -20px;
+      width: 10px;
+      height: 10px;
+      z-index: 40;
+      pointer-events: none;
+      animation: confettiFall linear infinite;
+    }
+
+    @keyframes sparklePulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    .sparkle {
+      animation: sparklePulse 1.8s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body id="game-body" class="flex flex-col items-center justify-start min-h-screen px-2.5 py-3">
+
+  <!-- 常時表示のトップユーティリティバー（タイトル＋BGMミュート切替） -->
+  <div class="w-full max-w-[600px] flex items-center justify-between mb-2 px-1 z-30">
+    <div class="flex items-center gap-2 text-xs sm:text-sm text-amber-300 font-bold tracking-wider">
+      <span>⚔️ 信濃クエスト</span>
+    </div>
+    <button id="mute-toggle-btn" type="button"
+      class="px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-500 text-slate-200 text-xs font-bold flex items-center gap-1.5 hover:border-amber-400 active:scale-95 transition">
+      <i id="mute-icon" class="fa-solid fa-volume-high text-amber-300"></i>
+      <span id="mute-label">BGM ON</span>
+    </button>
+  </div>
+
+  <!-- ステータスHUD（本編・商人ステージ中のみ表示） -->
+  <header id="hud-bar" class="hidden w-full max-w-[600px] mb-2.5 flex flex-col gap-2 z-20">
+    <div class="rpg-window p-2.5 sm:p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <!-- 左：プレイヤー名・ジョブ・HP・スコア -->
+      <div class="flex items-center gap-2.5 flex-1">
+        <div id="hud-job-icon" class="w-11 h-11 rounded-lg bg-slate-900 border-2 border-amber-400 flex items-center justify-center text-xl shrink-0">
+          👑
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span id="hud-job" class="text-[11px] px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-black">勇者</span>
+            <span id="hud-name" class="text-sm sm:text-base font-bold text-white truncate">プレイヤー</span>
+            <span class="text-xs text-amber-300 ml-auto font-bold">SCORE: <span id="hud-score">0</span></span>
+          </div>
+          <div class="flex items-center gap-2 mt-1">
+            <div class="text-xs sm:text-sm font-bold text-emerald-400 shrink-0">
+              HP <span id="hud-hp" class="text-base text-white">100</span>/<span id="hud-maxhp">100</span>
+            </div>
+            <div class="flex-1 bg-slate-800 h-3.5 rounded-full overflow-hidden border border-slate-500">
+              <div id="hud-hp-bar" class="bg-gradient-to-r from-emerald-500 to-green-400 h-full transition-all duration-300" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右：獲得アイテム一覧（1回使用可能） -->
+      <div class="border-t sm:border-t-0 sm:border-l border-slate-700 pt-2 sm:pt-0 sm:pl-2.5 flex flex-col justify-center sm:min-w-[190px]">
+        <div class="text-[11px] text-slate-400 mb-1 flex items-center justify-between gap-2">
+          <span>🎒アイテム</span>
+          <span id="hud-revive-badge" class="text-amber-300 font-bold"></span>
+        </div>
+        <div id="hud-items" class="flex flex-wrap gap-1.5 items-center min-h-[28px]">
+          <!-- 動的に生成 -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインゲームコンテナ（スマホ最適化 max-width 600px） -->
+  <main id="main-screen" class="w-full max-w-[600px] rpg-window p-3.5 sm:p-5 relative overflow-hidden">
+    <!-- 各画面をレンダリング -->
+  </main>
+
+  <!-- エフェクトバナー（会心の一撃・アイテム使用通知） -->
+  <div id="effect-banner" class="fixed top-12 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-3 w-[92%] max-w-[520px]">
+    <div id="effect-banner-inner" class="px-4 py-2.5 rounded-xl border-2 border-yellow-300 bg-slate-950/95 text-yellow-300 font-bold text-sm sm:text-base shadow-2xl flex items-center justify-center gap-2 text-center">
+      <i class="fa-solid fa-bolt"></i>
+      <span id="effect-banner-text">会心の一撃！</span>
+    </div>
+  </div>
+
+  <!-- 解説モーダル -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black/85 z-50 hidden items-center justify-center p-3">
+    <div class="rpg-window-gold w-full max-w-[560px] p-4 sm:p-6 max-h-[88vh] overflow-y-auto">
+      <h3 id="modal-title" class="text-lg sm:text-xl font-bold text-amber-300 mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-scroll"></i> 解説
+      </h3>
+      <div id="modal-body" class="text-slate-100 text-sm sm:text-base leading-relaxed mb-5 whitespace-pre-line font-sans"></div>
+      <div class="flex justify-end">
+        <button id="modal-next-btn" type="button" class="rpg-btn rpg-btn-primary px-8 py-3 text-base w-full sm:w-auto">
+          次へ進む <i class="fa-solid fa-caret-right ml-1"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==============================================================
+       1. GitHubアセットURL定義（すべて raw.githubusercontent.com 形式）
+       ============================================================== */
+    const ASSETS = {
+      topImg: "https://raw.githubusercontent.com/t3takahashit3-cell/1126jobcafe/main/top.png",
+      title2Img: "https://raw.githubusercontent.com/t3takahashit3-cell/20261023chikuma/main/title2.jpg",
+      kamiImg: "https://raw.githubusercontent.com/t3takahashit3-cell/20261029matsukawa/main/kami.jpg",
+      zombieImg: "https://raw.githubusercontent.com/t3takahashit3-cell/20261023chikuma/main/zn.gif",
+      goblinImg: "https://raw.githubusercontent.com/t3takahashit3-cell/20261023chikuma/main/gb.gif",
+      minoImg: "https://raw.githubusercontent.com/t3takahashit3-cell/20261023chikuma/main/mi.gif",
+      merchantImg: "https://raw.githubusercontent.com/t3takahashit3-cell/1113nominami/main/syouinin.jpg",
+      dragonImg: "https://raw.githubusercontent.com/t3takahashit3-cell/20261023chikuma/main/dr.gif",
+      maouImg: "https://raw.githubusercontent.com/t3takahashit3-cell/20261023chikuma/main/mao.gif",
+      overImg: "https://raw.githubusercontent.com/t3takahashit3-cell/20261029matsukawa/main/over.jpg",
+      endingImg: "https://raw.githubusercontent.com/t3takahashit3-cell/1126jobcafe/main/top.png",
+
+      bgmOpening: "https://raw.githubusercontent.com/t3takahashit3-cell/20261023chikuma/main/mu.mp3",
+      bgmMaou: "https://raw.githubusercontent.com/t3takahashit3-cell/1113nominami/main/maoubgm.mp3",
+      bgmOver: "https://raw.githubusercontent.com/t3takahashit3-cell/20261029matsukawa/main/over.mp3",
+      bgmEnding: "https://raw.githubusercontent.com/t3takahashit3-cell/20261029matsukawa/main/ed.mp3"
+    };
+
+    /* 企業HPリンク一覧（選択肢に一致した場合、横に「HP」ボタンを配置） */
+    const COMPANY_LINKS = {
+      // 魔物1
+      "長野県A・コープ": "https://www.nagano-acoop.co.jp/",
+      "デリシア": "https://www.delicia-web.co.jp/",
+      "ツルヤ": "https://www.tsuruya-corp.co.jp/",
+      "ニシザワ": "https://www.nishizawa.co.jp/",
+      "ビッグ": "https://www.aeonbig.co.jp/",
+      // 魔物2
+      "ルートインジャパン": "https://www.route-inn.co.jp/",
+      "シャトレーゼリゾート八ヶ岳": "https://www.chateraiseresort.co.jp/",
+      "池の平ホテル＆リゾーツ": "https://www.ikenotaira-resort.co.jp/",
+      "星野リゾート": "https://hoshinoresorts.com/jp/",
+      "ホテル国際21": "https://www.kokusai21.jp/",
+      "マルイチ産商": "https://www.maruichi.com/",
+      "R＆Cながの青果": "https://rcns.jp/",
+      "丸水長野県水": "https://www.marusui.co.jp/",
+      "ナガレイ": "https://www.nagarei.co.jp/",
+      "丸西産業": "https://www.marunishi-sangyo.co.jp/",
+      // 魔物3
+      "樫山工業": "https://www.kashiyama.com/",
+      "ミネベアミツミ": "https://www.minebeamitsumi.com/",
+      "シチズンマシナリー": "https://cmj.citizen.co.jp/",
+      "小諸村田製作所": "https://corporate.murata.com/ja-jp/group/komoromurata",
+      "日精エー・エス・ビー機械": "https://www.nisseiasb.co.jp/ja/",
+      "桜井甘精堂": "https://www.kanseido.co.jp/",
+      "林檎の木": "https://www.ringonoki.co.jp/",
+      "豊上製菓": "https://www.hojo-seika.co.jp/",
+      "平五郎": "https://www.heigoro.jp/",
+      "アトリオン製菓": "https://www.atrion-s.com/",
+      // 魔物4
+      "エラン": "https://www.kkelan.com/",
+      "タカサワ": "https://www.takasawa.co.jp/",
+      "タカラクリエイト": "https://www.takaracreate.co.jp/",
+      "ミヤマ": "https://www.miyama.net/",
+      "シーティーエス": "https://www.cts-h.co.jp/",
+      "本久": "https://www.motohisa.co.jp/",
+      "マナテック": "https://www.manatec.co.jp/",
+      "炭平コーポレーション": "https://www.sumihei.co.jp/",
+      "マルオカ": "https://www.maruoka.co.jp/",
+      "アメニクス": "https://www.amenix.co.jp/",
+      // 魔物5
+      "ヤッホーブルーイング": "https://yohobrewing.com/",
+      "パスカル": "https://www.pascal.jp/",
+      "ミマキエンジニアリング": "https://japan.mimaki.com/",
+      "相馬商事": "https://www.somashoji.co.jp/"
+    };
+
+    /* 非ブロッキング画像プリロード（失敗しても進行を妨げない） */
+    function preloadImagesSafely() {
+      const urls = [
+        ASSETS.topImg, ASSETS.title2Img, ASSETS.kamiImg,
+        ASSETS.zombieImg, ASSETS.goblinImg, ASSETS.minoImg,
+        ASSETS.merchantImg, ASSETS.dragonImg, ASSETS.maouImg,
+        ASSETS.overImg, ASSETS.endingImg
+      ];
+      urls.forEach(url => {
+        try {
+          const img = new Image();
+          img.src = url;
+        } catch (e) {
+          // 無視
+        }
+      });
+    }
+
+    /* ==============================================================
+       2. iOS Safari / Chrome 完全対応 サウンドマネージャー
+       ============================================================== */
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+        this.currentBgm = null;
+        this.currentKey = null;
+        this.bgms = {};
+        this.initBgmObjects();
+      }
+
+      initBgmObjects() {
+        const tracks = {
+          opening: ASSETS.bgmOpening,
+          maou: ASSETS.bgmMaou,
+          over: ASSETS.bgmOver,
+          ending: ASSETS.bgmEnding
+        };
+        Object.keys(tracks).forEach(key => {
+          try {
+            const audio = new Audio();
+            audio.src = tracks[key];
+            audio.loop = true;
+            audio.preload = "metadata";
+            audio.volume = 0.35;
+            this.bgms[key] = audio;
+          } catch (e) {
+            // 無視
+          }
+        });
+      }
+
+      unlockAudio() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!this.ctx && AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+          if (this.ctx && this.ctx.state === "suspended") {
+            this.ctx.resume().catch(() => {});
+          }
+        } catch (e) {
+          // iOS制限下でもエラー停止させない
+        }
+      }
+
+      playBgm(key) {
+        try {
+          if (this.currentKey === key && this.currentBgm && !this.currentBgm.paused) {
+            return;
+          }
+          this.stopBgm();
+          const target = this.bgms[key];
+          if (!target) return;
+          this.currentBgm = target;
+          this.currentKey = key;
+          target.currentTime = 0;
+          target.muted = this.muted;
+          if (!this.muted) {
+            const p = target.play();
+            if (p && typeof p.catch === "function") {
+              p.catch(() => {});
+            }
+          }
+        } catch (e) {
+          // 無視
+        }
+      }
+
+      stopBgm() {
+        try {
+          if (this.currentBgm) {
+            this.currentBgm.pause();
+            this.currentBgm.currentTime = 0;
+          }
+          this.currentBgm = null;
+          this.currentKey = null;
+        } catch (e) {
+          // 無視
+        }
+      }
+
+      toggleMute() {
+        this.muted = !this.muted;
+        try {
+          if (this.currentBgm) {
+            this.currentBgm.muted = this.muted;
+            if (!this.muted && this.currentBgm.paused) {
+              const p = this.currentBgm.play();
+              if (p && typeof p.catch === "function") {
+                p.catch(() => {});
+              }
+            }
+          }
+        } catch (e) {
+          // 無視
+        }
+        return this.muted;
+      }
+
+      playTone(freq, duration, type = "square", volume = 0.04) {
+        if (this.muted) return;
+        try {
+          this.unlockAudio();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          // 無視
+        }
+      }
+
+      playPip() {
+        this.playTone(760, 0.03, "square", 0.02);
+      }
+
+      playClick() {
+        this.playTone(540, 0.05, "square", 0.035);
+      }
+
+      playCorrect() {
+        if (this.muted) return;
+        try {
+          this.unlockAudio();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [523.25, 659.25, 783.99].forEach((f, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(f, now + idx * 0.07);
+            gain.gain.setValueAtTime(0.06, now + idx * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.14);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.07);
+            osc.stop(now + idx * 0.07 + 0.14);
+          });
+        } catch (e) {}
+      }
+
+      playSlash() {
+        if (this.muted) return;
+        try {
+          this.unlockAudio();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(1100, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+          gain.gain.setValueAtTime(0.07, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } catch (e) {}
+      }
+
+      playBuzzer() {
+        if (this.muted) return;
+        try {
+          this.unlockAudio();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [0, 0.14].forEach(offset => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(145, now + offset);
+            gain.gain.setValueAtTime(0.07, now + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.11);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + offset);
+            osc.stop(now + offset + 0.11);
+          });
+        } catch (e) {}
+      }
+
+      playHeal() {
+        if (this.muted) return;
+        try {
+          this.unlockAudio();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [440, 554.37, 659.25, 880].forEach((f, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(f, now + idx * 0.06);
+            gain.gain.setValueAtTime(0.05, now + idx * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.16);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.06);
+            osc.stop(now + idx * 0.06 + 0.16);
+          });
+        } catch (e) {}
+      }
+    }
+
+    const sound = new SoundManager();
+
+    /* ==============================================================
+       3. ゲームデータ定義（ジョブ診断・プロローグ・魔物・商人）
+       ============================================================== */
+    const JOBS = {
+      warrior: {
+        name: "戦士",
+        subtitle: "モノづくり・現場・実践タイプ",
+        icon: "⚔️",
+        specialty: "製造業・建設業・機械系",
+        skillTitle: "現場の底力",
+        skillDesc: "製造・建設・機械系のクイズに正解すると「会心の一撃！」が発動し、獲得スコアが1.5倍になります。"
+      },
+      priest: {
+        name: "僧侶",
+        subtitle: "対人サポート・サービス・ホスピタリティタイプ",
+        icon: "✨",
+        specialty: "小売業・飲食・観光ホテル・医療福祉系",
+        skillTitle: "おもてなしの心",
+        skillDesc: "「薬草」などの回復アイテムの回復量が2倍になり、さらに魔物を倒すごとにHPが5自動回復します。"
+      },
+      mage: {
+        name: "魔法使い",
+        subtitle: "IT・分析・クリエイティブ・探究タイプ",
+        icon: "🔮",
+        specialty: "IT・システム・設計・精密計測・データ系",
+        skillTitle: "データ解析",
+        skillDesc: "バトルのクイズ開始時、5つの選択肢のうち最初からハズレが1つ消去された状態でスタートします。"
+      },
+      hero: {
+        name: "勇者",
+        subtitle: "バランス・リーダー・挑戦タイプ",
+        icon: "👑",
+        specialty: "全業界バランス型 ＋ 総合問題・ボス戦",
+        skillTitle: "オールラウンダー",
+        skillDesc: "特定の業界に偏らず、どの業界のクイズに正解しても安定して獲得スコアが1.2倍になります。"
+      }
+    };
+
+    /* 若年求職者・転職希望者向けジョブ診断（全10問） */
+    const JOB_QUESTIONS = [
+      {
+        q: "これまでの仕事や経験の中で「これなら任せろ！」と思えるのは？",
+        options: [
+          { text: "手を動かしてモノを作ったり、正確に作業をこなすこと", job: "warrior" },
+          { text: "お客さんや仲間と会話して、場の空気を良くすること", job: "priest" },
+          { text: "パソコンやスマホ、機械の設定・データ入力などをいじること", job: "mage" },
+          { text: "全体の流れを見て、いろんな役割をバランスよくこなすこと", job: "hero" }
+        ]
+      },
+      {
+        q: "新しいツールやアプリ、仕事道具を手に入れたら、まずどうする？",
+        options: [
+          { text: "とりあえず触って動かしながら、使い心地を確かめる", job: "warrior" },
+          { text: "「これ便利だよ！」と周囲の人にも教えてあげたくなる", job: "priest" },
+          { text: "どんな仕組みで動いているのか、機能やスペックを徹底的に調べる", job: "mage" },
+          { text: "これを使ってどんな新しいことができるかアイデアを広げる", job: "hero" }
+        ]
+      },
+      {
+        q: "職場やチーム作業で大ピンチ（急な混雑・トラブル）発生！とっさにどう動く？",
+        options: [
+          { text: "目の前の作業に超集中して、手を止めずに片っ端から処理する", job: "warrior" },
+          { text: "困っている人や遅れている仲間のフォローにすぐ回る", job: "priest" },
+          { text: "原因を冷静に分析して、一番効率の良い解決ルートを探す", job: "mage" },
+          { text: "「自分がこっちやるから頼む！」と声をかけて全体を仕切る", job: "hero" }
+        ]
+      },
+      {
+        q: "自分の作業スペースやスマホのホーム画面、どんな状態がしっくりくる？",
+        options: [
+          { text: "よく使う道具やアプリが、すぐ手に取れる定位置に並んでいる", job: "warrior" },
+          { text: "他の人が見ても分かりやすいように、きれいに整理されている", job: "priest" },
+          { text: "ジャンルやフォルダごとにルールを決めて、無駄なく分類されている", job: "mage" },
+          { text: "多少散らかっていても、自分が今やりたいことにすぐアクセスできる", job: "hero" }
+        ]
+      },
+      {
+        q: "仕事や作業をしていて、一番「よっしゃ！」と達成感を感じる瞬間は？",
+        options: [
+          { text: "自分の手で完璧な仕上がりのモノや成果が完成したとき", job: "warrior" },
+          { text: "「ありがとう」「助かったよ」と直接感謝されたとき", job: "priest" },
+          { text: "面倒な作業を工夫して、圧倒的なスピードで終わらせたとき", job: "mage" },
+          { text: "難しい課題や初めてのミッションをチームでクリアしたとき", job: "hero" }
+        ]
+      },
+      {
+        q: "友人や職場の先輩・同僚から、よく言われる（褒められる）のは？",
+        options: [
+          { text: "「手先が器用だね」「集中力がすごいね」", job: "warrior" },
+          { text: "「気配りができるね」「話しやすいね」", job: "priest" },
+          { text: "「よくそんなこと知ってるね」「頭が切れるね」", job: "mage" },
+          { text: "「行動力があるね」「頼りになるね」", job: "hero" }
+        ]
+      },
+      {
+        q: "もし1日だけ会社に職場見学に行くなら、どの現場が一番ワクワクする？",
+        options: [
+          { text: "火花や最新ロボットが動く、巨大なモノづくり工場", job: "warrior" },
+          { text: "たくさんの笑顔が行き交う、人気ホテルや大型店舗の裏側", job: "priest" },
+          { text: "最新PCやモニターがずらりと並ぶ、IT・設計・開発ルーム", job: "mage" },
+          { text: "街の景色やインフラを作り変える、大規模プロジェクトの司令室", job: "hero" }
+        ]
+      },
+      {
+        q: "地域のイベントや職場のプロジェクトで役割を決めるなら、どれを選ぶ？",
+        options: [
+          { text: "会場設営や機材セッティングなど、現場を支える実務スタッフ", job: "warrior" },
+          { text: "来場者の案内・接客や、場の雰囲気を盛り上げるサポート役", job: "priest" },
+          { text: "広報デザイン・データ集計や、予算・スケジュールの管理担当", job: "mage" },
+          { text: "全体の企画リーダーや、いろんな担当をつなぐ調整役", job: "hero" }
+        ]
+      },
+      {
+        q: "【RPG質問】ダンジョンで謎の宝箱を発見！どうする？",
+        options: [
+          { text: "罠があっても叩き壊せるよう、武器を構えて慎重にこじ開ける", job: "warrior" },
+          { text: "仲間のHPや状態異常を確認してから、安全に開ける", job: "priest" },
+          { text: "鍵の構造や魔力の反応を解析して、リスクゼロで解除する", job: "mage" },
+          { text: "「お宝かもしれない！」と迷わず真っ先に飛び込んで開ける", job: "hero" }
+        ]
+      },
+      {
+        q: "これから働くなら、どんなスタンスでキャリアを築きたい？",
+        options: [
+          { text: "一つの技術や専門スキルを極めて、プロフェッショナルになりたい", job: "warrior" },
+          { text: "人と関わりながら、誰かの暮らしや笑顔を直接支えたい", job: "priest" },
+          { text: "知識やデジタル技術を武器に、スマートに効率よく働きたい", job: "mage" },
+          { text: "変化を恐れずいろんな経験を積んで、自分の可能性を広げたい", job: "hero" }
+        ]
+      }
+    ];
+
+    /* プロローグ能力決定クイズ（1〜4：単一選択、5：5つ選択） */
+    const PROLOGUE_QUESTIONS = [
+      {
+        q: "① 長野県で最も会社の数が多い業界は？",
+        options: ["飲食宿泊業", "小売業", "製造業", "情報通信業", "農林業"],
+        answer: 1,
+        rewardKey: "herb",
+        rewardName: "薬草",
+        rewardDesc: "本編のバトル中に使うとHPが20回復する（僧侶は2倍の40回復！）。",
+        explain: "正解は「小売業」です。スーパーやコンビニ、専門店など地域の暮らしを支えるお店が長野県内には非常に多く存在します。"
+      },
+      {
+        q: "② 最も働いている人が多い業界は？",
+        options: ["飲食宿泊業", "小売業", "製造業", "情報通信業", "農林業"],
+        answer: 2,
+        rewardKey: "wand",
+        rewardName: "魔法の杖",
+        rewardDesc: "本編のバトル中に使うと、選択肢を3つ（正解＋2つ）に減らせる。",
+        explain: "正解は「製造業」です。長野県は精密機械や電子部品、食品製造などのモノづくり産業が盛んで、最も多くの人が働いています。"
+      },
+      {
+        q: "③ 世の中に存在する「職業」の種類はどれくらい？",
+        options: ["約700種類", "約1,700種類", "約17,000種類", "約170,000種類"],
+        answer: 2,
+        rewardKey: "revive",
+        rewardName: "復活の書",
+        rewardDesc: "HPが0になって倒れても、その場から復活して再挑戦できる秘伝の書。",
+        explain: "正解は「約17,000種類」です（厚生労働省編職業分類）。私たちが普段目にしている仕事はほんの一部。知らないだけで自分に合う仕事がきっとあります。"
+      },
+      {
+        q: "④ 直近の長野県の有効求人倍率は？",
+        options: ["0.9", "1.0", "1.1", "1.2", "1.3"],
+        answer: 4,
+        rewardKey: "apple",
+        rewardName: "奇跡のリンゴ",
+        rewardDesc: "使うと「薬草」と「魔法の杖」の効果を同時に発揮し、さらに「復活の書」も1つ増える超レアアイテム！",
+        explain: "正解は「1.3」です。1.0を超えているということは、仕事を探している人（求職者）の数よりも、企業からの求人数の方が多い「売り手市場」であることを示しています。"
+      }
+    ];
+
+    const PROLOGUE_Q5_ITEMS = [
+      "真空ポンプ", "そば", "フルート", "唐辛子", "印刷装置",
+      "ギター", "なめこ", "電気測定器", "加工用トマト", "りんご", "野菜漬物"
+    ];
+    const PROLOGUE_Q5_CORRECT = ["真空ポンプ", "印刷装置", "ギター", "電気測定器", "加工用トマト"];
+
+    /* 本編モンスター＆問題リスト（0〜2: 魔物1〜3、3: 魔物4、4: 魔物5大魔王） */
+    const MONSTERS = [
+      {
+        id: "zombie",
+        name: "ゾンビ",
+        img: ASSETS.zombieImg,
+        isMaou: false,
+        questions: [
+          {
+            category: "priest",
+            q: "本社は小諸市。小売業（スーパーマーケット）の中で県内No.1の売り上げを誇り、早くからオリジナルブランドの開発・販売も行っている企業は？",
+            options: ["長野県A・コープ", "デリシア", "ツルヤ", "ニシザワ", "ビッグ"],
+            answer: 2
+          }
+        ]
+      },
+      {
+        id: "goblin",
+        name: "ゴブリン",
+        img: ASSETS.goblinImg,
+        isMaou: false,
+        questions: [
+          {
+            category: "priest",
+            q: "発祥は軽井沢町。1914年に開業した温泉旅館をルーツに持ち、現在は圧倒的な非日常を味わう温泉旅館「界」、街ナカホテル「OMO」などを展開。グループにはビール会社もある、長野県発の観光企業は？",
+            options: ["ルートインジャパン", "シャトレーゼリゾート八ヶ岳", "池の平ホテル＆リゾーツ", "星野リゾート", "ホテル国際21"],
+            answer: 3
+          },
+          {
+            category: "priest",
+            q: "毎日の食卓に並ぶ新鮮な野菜や果物を支える「地方卸売市場・全国1位」の巨大ネットワーク！長野市・上田市に本社を構え、2022年の合併によって誕生した、信州から全国・世界へ農作物を届ける青果流通のトップ企業はどこ？",
+            options: ["マルイチ産商", "R＆Cながの青果", "丸水長野県水", "ナガレイ", "丸西産業"],
+            answer: 1,
+            explanationTitle: "正解：R＆Cながの青果",
+            explanation: "「地方卸売市場の青果取扱高・日本一」を誇る超大型の流通企業！長野県内6市場と関東圏のグループ拠点を結び、信州の高原野菜や果物を全国・海外へ届けています。"
+          }
+        ]
+      },
+      {
+        id: "mino",
+        name: "ミノタウロス",
+        img: ASSETS.minoImg,
+        isMaou: false,
+        questions: [
+          {
+            category: "warrior",
+            q: "本社は佐久市。スマートフォンや自動車に欠かせない「半導体」や有機ELディスプレイの製造現場で、クリーンな真空状態を作り出す「ドライ真空ポンプ」の専業メーカーとして世界トップクラスのシェアを誇る企業は？イルミネーションも有名！",
+            options: ["樫山工業", "ミネベアミツミ", "シチズンマシナリー", "小諸村田製作所", "日精エー・エス・ビー機械"],
+            answer: 0
+          },
+          {
+            category: "warrior",
+            q: "本社は須坂市。口の中ではじけるキャンディ「パチパチパニック」や、長年親しまれているタブレット菓子「ヨーグレット」「ハイレモン」などの製造・販売を手掛け、2023年に「明治産業」から社名を変更して新たなスタートを切った製菓メーカーは？",
+            options: ["桜井甘精堂", "林檎の木", "豊上製菓", "平五郎", "アトリオン製菓"],
+            answer: 4,
+            explanationTitle: "正解：アトリオン製菓",
+            explanation: "スーパーやコンビニで誰もが一度は見たことがある有名なお菓子が、実は須坂市の工場で作られて全国へ届けられています。以前は「明治産業」という社名でしたが、2023年に「アトリオン製菓」へと生まれ変わり、伝統のロングセラー商品からユニークな新商品まで幅広く手掛けています。"
+          }
+        ]
+      },
+      {
+        id: "dragon",
+        name: "ドラゴン",
+        img: ASSETS.dragonImg,
+        isMaou: false,
+        questions: [
+          {
+            category: "priest",
+            q: "「急な入院でも、手ぶらでOK！」パジャマやタオル、日用品をセットで届ける画期的なサービス「CSセット」を生み出し、全国の病院や患者さんのピンチを救い続ける松本市発の東証プライム上場企業はどこ？",
+            options: ["エラン", "タカサワ", "タカラクリエイト", "ミヤマ", "シーティーエス"],
+            answer: 0,
+            explanationTitle: "正解：エラン",
+            explanation: "「急な入院でパジャマやタオルの準備・洗濯が大変…」という患者さんや家族の悩みと、病院スタッフの負担を同時に解決する「CSセット」のパイオニアです。松本市からスタートし、今や全国の病院・介護施設に導入される業界トップクラスの医療・介護サポート企業へと成長しています。"
+          },
+          {
+            category: "warrior",
+            q: "本社は長野市。「アメニティ（快適な環境）」を社名の由来に持ち、キッチンやバスなどの住宅設備機器から、エアコンなどの空調設備、上下水道に使われるパイプ・配管資材（管工機材）まで幅広く取り扱う総合専門商社として、信州の暮らしのライフラインを支える企業は？",
+            options: ["本久", "マナテック", "炭平コーポレーション", "マルオカ", "アメニクス"],
+            answer: 4,
+            explanationTitle: "正解：アメニクス",
+            explanation: "「水」と「空気」の通り道をつくる縁の下の力持ち！建物の壁の中や地面の下を通る配管、お店や学校の空調設備、家の水回り機器などをプロの施工業者へ届ける専門商社です。長野県を中心に幅広いエリアをカバーし、省エネ・環境機器の提案も含めて私たちの快適な毎日を支えています。"
+          }
+        ]
+      },
+      {
+        id: "maou",
+        name: "大魔王",
+        img: ASSETS.maouImg,
+        isMaou: true,
+        questions: [
+          {
+            category: "priest",
+            refCompany: "ヤッホーブルーイング",
+            q: "【問題１】軽井沢町に本社を置き、「よなよなエール」などのクラフトビールで知られる「ヤッホーブルーイング」。同社の特徴や取り組みに当てはまらないものを選びなさい。",
+            options: [
+              "社長も新入社員も役職ではなく「ニックネーム」で呼び合う",
+              "ファンと社員が一緒にキャンプ場で楽しむ大型イベント「超宴（ちょううたげ）」を開催している",
+              "味や香りの個性を際立たせるため、すべて手作業で瓶詰めしインターネット販売のみに限定している",
+              "スタッフ一人ひとりの個性を活かしてチーム力を高める独自の研修（チームビルディング）を重視している",
+              "企業理念として「ビールに味を！人生に幸せを！」を掲げている"
+            ],
+            answer: 2,
+            explanationTitle: "正解：すべて手作業で瓶詰めしインターネット販売のみに限定している",
+            explanation: "販売ルートは全国区！インターネット通販だけでなく、全国のスーパーやコンビニ、公式ビアレストランなど身近なお店でも幅広く販売されています。また主力は「缶ビール」で、最先端の機械設備と職人のこだわりを両立しています。"
+          },
+          {
+            category: "hero",
+            q: "【問題２】2024年度の売上（その会社が稼いだ金額）が最も高い会社はどれ？",
+            options: ["ミネベアミツミ", "ツルヤ", "ミマキエンジニアリング", "樫山工業", "相馬商事"],
+            answer: 0,
+            explanationTitle: "正解：ミネベアミツミ（2024年度 売上実績・単位：百万円）",
+            explanation: "１．ミネベアミツミ：867,651\n２．ツルヤ：139,207\n３．ミマキエンジニアリング：60,925\n４．樫山工業：42,959\n５．相馬商事：12,500\n\n御代田町に本社（軽井沢工場）を置くミネベアミツミは、ミニチュアボールベアリングなどで世界トップシェアを誇るグローバル企業です！"
+          },
+          {
+            category: "mage",
+            refCompany: "パスカル",
+            q: "【問題３】佐久市にあるIT会社の「パスカル」。連絡網システムで有名なこの会社が提供していないサービスはどれ？",
+            options: [
+              "緊急連絡・安否確認システム「オクレンジャー」",
+              "心の健康診断「ストレスチェック」",
+              "営業支援システム「アグレンジャー」",
+              "自社システムを生かした野菜栽培",
+              "輸送支援システム「ハコブンジャー」"
+            ],
+            answer: 4,
+            explanationTitle: "正解：輸送支援システム「ハコブンジャー」",
+            explanation: "「ハコブンジャー」は存在しないサービスです。パスカルは連絡網システム「オクレンジャー」をはじめ、ストレスチェックや農業支援・野菜栽培など幅広い事業を展開しています。"
+          },
+          {
+            category: "hero",
+            q: "【問題４】日本（および長野県）にある全企業のうち、「中小企業」が占める割合はおよそどれくらい？",
+            options: ["約50％", "約70％", "約85％", "約95％", "約99.7％"],
+            answer: 4,
+            explanationTitle: "正解：約99.7％",
+            explanation: "日本の企業の99.7％は中小企業で、働く人の約7割が中小企業で活躍しています。テレビCMで見かける有名企業はほんの一握り。長野県内にも、このゲームで登場したような「世界トップシェアの技術」や「地域No.1の強み」を持つ隠れた優良企業がたくさんあります。"
+          }
+        ]
+      }
+    ];
+
+    /* 商人ステージデータ */
+    const MERCHANT_CONTRACT_ITEMS = [
+      { id: "wage", text: "時給は１０００円", isViolation: true },
+      { id: "raise", text: "勤務日数により昇給あり。", isViolation: false },
+      { id: "selfpay", text: "仕入れの計算ミスは給料から自腹清算", isViolation: true },
+      { id: "commute", text: "交通費は全額自己負担", isViolation: false },
+      { id: "review", text: "成績が悪い場合は１日ごとに給与見直し", isViolation: true }
+    ];
+
+    const MERCHANT_DEBATES = [
+      {
+        title: "シチュエーション１：お昼休みの電話番",
+        story: "お昼休みの1時間に「電話がかかってくるかもしれないから、カウンターで弁当食べて」と指示されました。結果としてその1時間は1本も電話が鳴らず、完全に自分のスマホを見て過ごせました。\nすると商人が「何もしなかったんだから、当然給料はなしでいいよな」と言ってきました。どれが正しいでしょうか？",
+        options: [
+          "1本も電話に対応しておらず、実際に休めていたため、通常通り「無給の休憩時間」として扱ってよい。",
+          "実際に電話が鳴らなかったとしても、会社の指示でデスクに縛られていたため「労働時間」となり、1時間分の給与（残業代）が発生する。",
+          "電話対応という業務は発生しなかったが、場所が制限された手当として「通常の時給の50%」を支払わなければならない。"
+        ],
+        answer: 1,
+        explanation: "労働基準法上の休憩は「労働から『完全に』解放されていること」が条件です。結果的に電話が鳴らなかったとしても、会社の命令で待機している状態（手待ち時間）は会社の指揮命令下にあるとみなされ、立派な「労働時間」になります。したがって、この1時間は休憩とは認められず、給与（残業代）の支払い対象になります。"
+      },
+      {
+        title: "シチュエーション２：名ばかりの店長",
+        story: "仲間がどんどん辞めてしまい、「店長」に昇進しました！商人から「店長は立派な役職（管理監督者）だから、これから残業代は出ないよ。その代わり役職手当を月1万円あげるね」と言われました。しかし、仕事内容はこれまで通りレジ打ちや品出しがメインで、アルバイトのシフトが回らない時は自分が穴埋めしています。正しい考え方は？",
+        options: [
+          "「店長」という名前がつき、役職手当が1円でも出ているなら、法律上「管理職」になるので残業代が出ないのは正しい。",
+          "店長であっても、普通の残業代（25%アップ）は出ないが、夜22時以降に働いた分の「深夜手当」や「休日手当」は請求できる。",
+          "自分の判断で人を採用したり、働く時間を自由に決めたりできる権限がないなら、名ばかりの店長（名ばかり管理職）なので、会社は残業代を全額払わなければ違法。"
+        ],
+        answer: 2,
+        explanation: "法律で残業代を出さなくていいとされる「管理監督者」とは、社長と同じくらいの強い権限（採用権など）を持ち、自分の労働時間を自分でコントロールできる人のことです。アルバイトと同じようにシフトに縛られて動いている店長は、名ばかりの管理職であり、会社は残業代を払う義務があります。なお、管理職手当が出ていても深夜手当は請求できます。"
+      }
+    ];
+
+    /* ==============================================================
+       4. ゲーム状態管理
+       ============================================================== */
+    let state = {};
+    let activeTimers = [];
+
+    function resetAllState() {
+      clearAllTimers();
+      state = {
+        playerName: "勇者",
+        jobKey: "hero",
+        jobVotes: { warrior: 0, priest: 0, mage: 0, hero: 0 },
+        jobQIndex: 0,
+        prologueQIndex: 0,
+        hp: 100,
+        maxHp: 100,
+        score: 0,
+        items: {
+          herb: 0,
+          wand: 0,
+          apple: 0,
+          revive: 0
+        },
+        monsterIndex: 0,
+        questionIndex: 0,
+        merchantDone: false,
+        merchantClearedCount: 0,
+        inBattle: false,
+        wandUsedOnCurrentQ: false,
+        eliminatedOptions: [],
+        lastCheckpoint: null
+      };
+      hideHud();
+    }
+
+    function clearAllTimers() {
+      activeTimers.forEach(id => {
+        clearTimeout(id);
+        clearInterval(id);
+      });
+      activeTimers = [];
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    /* ==============================================================
+       5. 共通UI演出（タイプライター・バナー・モーダル・HUD）
+       ============================================================== */
+    function typeText(elementId, text, speed = 42, onComplete = null) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.textContent = "";
+      let idx = 0;
+      const timerId = setInterval(() => {
+        if (!document.getElementById(elementId)) {
+          clearInterval(timerId);
+          return;
+        }
+        if (idx < text.length) {
+          el.textContent += text.charAt(idx);
+          // iOS負荷対策：3文字に1回だけピピ音を鳴らす
+          if (idx % 3 === 0 && text.charAt(idx) !== " " && text.charAt(idx) !== "　") {
+            sound.playPip();
+          }
+          idx++;
+        } else {
+          clearInterval(timerId);
+          if (onComplete) onComplete();
+        }
+      }, speed);
+      activeTimers.push(timerId);
+    }
+
+    function showBanner(text, colorClass = "text-yellow-300 border-yellow-300") {
+      const banner = document.getElementById("effect-banner");
+      const inner = document.getElementById("effect-banner-inner");
+      const textEl = document.getElementById("effect-banner-text");
+      if (!banner || !inner || !textEl) return;
+
+      textEl.textContent = text;
+      inner.className = `px-4 py-2.5 rounded-xl border-2 bg-slate-950/95 font-bold text-sm sm:text-base shadow-2xl flex items-center justify-center gap-2 text-center ${colorClass}`;
+      banner.classList.remove("opacity-0", "-translate-y-3");
+      banner.classList.add("opacity-100", "translate-y-0");
+
+      const t = setTimeout(() => {
+        banner.classList.remove("opacity-100", "translate-y-0");
+        banner.classList.add("opacity-0", "-translate-y-3");
+      }, 2200);
+      activeTimers.push(t);
+    }
+
+    function showModal(title, bodyText, btnLabel, onNext) {
+      const overlay = document.getElementById("modal-overlay");
+      const titleEl = document.getElementById("modal-title");
+      const bodyEl = document.getElementById("modal-body");
+      const btn = document.getElementById("modal-next-btn");
+
+      titleEl.innerHTML = `<i class="fa-solid fa-scroll"></i> ${title}`;
+      bodyEl.textContent = bodyText;
+      btn.innerHTML = `${btnLabel} <i class="fa-solid fa-caret-right ml-1"></i>`;
+
+      overlay.classList.remove("hidden");
+      overlay.classList.add("flex");
+
+      btn.onclick = () => {
+        sound.playClick();
+        overlay.classList.add("hidden");
+        overlay.classList.remove("flex");
+        if (onNext) onNext();
+      };
+    }
+
+    function showHud() {
+      document.getElementById("hud-bar").classList.remove("hidden");
+      updateHud();
+    }
+
+    function hideHud() {
+      document.getElementById("hud-bar").classList.add("hidden");
+    }
+
+    function updateHud() {
+      const job = JOBS[state.jobKey] || JOBS.hero;
+      document.getElementById("hud-job-icon").textContent = job.icon;
+      document.getElementById("hud-job").textContent = job.name;
+      document.getElementById("hud-name").textContent = state.playerName;
+      document.getElementById("hud-score").textContent = state.score;
+      document.getElementById("hud-hp").textContent = state.hp;
+      document.getElementById("hud-maxhp").textContent = state.maxHp;
+
+      const pct = Math.max(0, Math.min(100, Math.round((state.hp / state.maxHp) * 100)));
+      const bar = document.getElementById("hud-hp-bar");
+      bar.style.width = `${pct}%`;
+      if (pct <= 25) {
+        bar.className = "bg-gradient-to-r from-red-600 to-rose-500 h-full transition-all duration-300";
+      } else if (pct <= 50) {
+        bar.className = "bg-gradient-to-r from-amber-500 to-yellow-400 h-full transition-all duration-300";
+      } else {
+        bar.className = "bg-gradient-to-r from-emerald-500 to-green-400 h-full transition-all duration-300";
+      }
+
+      const reviveBadge = document.getElementById("hud-revive-badge");
+      reviveBadge.textContent = state.items.revive > 0 ? `📖復活の書×${state.items.revive}` : "";
+
+      const itemsContainer = document.getElementById("hud-items");
+      itemsContainer.innerHTML = "";
+
+      const usableItems = [
+        { key: "herb", label: "🌿薬草", color: "border-emerald-400 text-emerald-200 bg-emerald-950/80" },
+        { key: "wand", label: "🪄魔法の杖", color: "border-sky-400 text-sky-200 bg-sky-950/80" },
+        { key: "apple", label: "🍎奇跡のリンゴ", color: "border-rose-400 text-rose-200 bg-rose-950/80" }
+      ];
+
+      let anyShown = false;
+      usableItems.forEach(item => {
+        if (state.items[item.key] > 0) {
+          anyShown = true;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `px-2 py-1 rounded border text-xs font-bold transition active:scale-95 ${item.color}`;
+          btn.textContent = state.items[item.key] > 1 ? `${item.label}×${state.items[item.key]}` : item.label;
+          btn.onclick = () => useItem(item.key);
+          itemsContainer.appendChild(btn);
+        }
+      });
+
+      if (!anyShown) {
+        const span = document.createElement("span");
+        span.className = "text-xs text-slate-500";
+        span.textContent = "なし";
+        itemsContainer.appendChild(span);
+      }
+    }
+
+    /* ==============================================================
+       6. アイテム使用処理
+       ============================================================== */
+    function useItem(key) {
+      if (state.items[key] <= 0) return;
+
+      if (key === "herb") {
+        const healAmt = state.jobKey === "priest" ? 40 : 20;
+        state.items.herb--;
+        state.hp = Math.min(state.maxHp, state.hp + healAmt);
+        sound.playHeal();
+        const extra = state.jobKey === "priest" ? "（僧侶効果2倍！）" : "";
+        showBanner(`🌿 薬草を使用！HPが ${healAmt} 回復した！${extra}`, "text-emerald-300 border-emerald-400");
+        updateHud();
+        return;
+      }
+
+      if (key === "wand") {
+        if (!state.inBattle) {
+          showBanner("🪄 魔法の杖は魔物とのバトル中に使えます！", "text-sky-300 border-sky-400");
+          return;
+        }
+        if (state.wandUsedOnCurrentQ) {
+          showBanner("🪄 この問題ではすでに選択肢を減らしています！", "text-sky-300 border-sky-400");
+          return;
+        }
+        state.items.wand--;
+        state.wandUsedOnCurrentQ = true;
+        applyWandReduction();
+        sound.playHeal();
+        showBanner("🪄 魔法の杖を使用！選択肢が3つに絞られた！", "text-sky-300 border-sky-400");
+        updateHud();
+        return;
+      }
+
+      if (key === "apple") {
+        const healAmt = state.jobKey === "priest" ? 40 : 20;
+        state.items.apple--;
+        state.hp = Math.min(state.maxHp, state.hp + healAmt);
+        state.items.revive++;
+        if (state.inBattle && !state.wandUsedOnCurrentQ) {
+          state.wandUsedOnCurrentQ = true;
+          applyWandReduction();
+        }
+        sound.playHeal();
+        showBanner(`🍎 奇跡のリンゴ！HP+${healAmt}＆選択肢削減＆復活の書+1！`, "text-rose-300 border-rose-400");
+        updateHud();
+      }
+    }
+
+    function applyWandReduction() {
+      const monster = MONSTERS[state.monsterIndex];
+      if (!monster) return;
+      const qObj = monster.questions[state.questionIndex];
+      if (!qObj) return;
+
+      const btns = Array.from(document.querySelectorAll(".battle-option-btn"));
+      const wrongActiveBtns = btns.filter(b => Number(b.dataset.origIdx) !== qObj.answer && !b.disabled);
+
+      // 残り選択肢が3つ（正解1＋不正解2）になるまで無効化
+      const targetDisableCount = Math.max(0, wrongActiveBtns.length - 2);
+      const toDisable = shuffleArray(wrongActiveBtns).slice(0, targetDisableCount);
+      toDisable.forEach(btn => {
+        btn.disabled = true;
+      });
+    }
+
+    /* ==============================================================
+       7. 画面レンダリング：タイトル1 〜 タイトル2 〜 名前入力
+       ============================================================== */
+    function renderTitle1() {
+      clearAllTimers();
+      sound.stopBgm();
+      hideHud();
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center py-2">
+          <div class="w-full rounded-lg overflow-hidden border-2 border-amber-400 shadow-lg mb-5 bg-black">
+            <img src="${ASSETS.topImg}" alt="信濃クエスト タイトル" class="w-full h-auto object-contain max-h-[360px] mx-auto"
+                 onerror="this.src='https://placehold.co/560x320/0f172a/facc15?text=SHINANO+QUEST'">
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 mb-4 leading-relaxed">
+            地元企業の知識と労働法を武器に、信濃の森の魔物を攻略せよ！
+          </p>
+          <button id="start-game-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-4 text-lg tracking-wider">
+            <i class="fa-solid fa-play"></i> スタート
+          </button>
+        </div>
+      `;
+
+      document.getElementById("start-game-btn").onclick = () => {
+        sound.unlockAudio();
+        sound.playClick();
+        sound.playBgm("opening");
+        renderTitle2();
+      };
+    }
+
+    function renderTitle2() {
+      clearAllTimers();
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="w-full rounded-lg overflow-hidden border-2 border-slate-500 mb-4 bg-black">
+            <img src="${ASSETS.title2Img}" alt="オープニング" class="w-full h-auto max-h-[260px] object-cover mx-auto"
+                 onerror="this.src='https://placehold.co/560x260/0f172a/38bdf8?text=SHINANO+FOREST'">
+          </div>
+          <div class="rpg-window w-full p-4 mb-5 text-left min-h-[120px]">
+            <p id="opening-story-text" class="text-base sm:text-lg leading-relaxed text-slate-100"></p>
+          </div>
+          <button id="begin-adventure-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-lg">
+            ⚔️ 冒険を始める
+          </button>
+        </div>
+      `;
+
+      const story = "いにしえの時代、信濃の森は魔物があふれ、住民たちは恐怖に脅かされていた。地元企業の知識を発揮し、立ちはだかる魔物たちを攻略するのだ。";
+      typeText("opening-story-text", story, 48);
+
+      // テキスト表示途中でも押せる
+      document.getElementById("begin-adventure-btn").onclick = () => {
+        sound.playClick();
+        clearAllTimers();
+        renderKamiNameInput();
+      };
+    }
+
+    function renderKamiNameInput() {
+      clearAllTimers();
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="w-44 h-44 sm:w-52 sm:h-52 rounded-xl overflow-hidden border-2 border-amber-300 shadow-[0_0_20px_rgba(250,204,21,0.35)] mb-4 bg-black">
+            <img src="${ASSETS.kamiImg}" alt="神さま" class="w-full h-full object-cover"
+                 onerror="this.src='https://placehold.co/240x240/1e1b4b/facc15?text=GODDESS'">
+          </div>
+          <div class="rpg-window w-full p-4 mb-4 text-left">
+            <div class="text-xs text-amber-300 font-bold mb-1">【神さま】</div>
+            <p id="kami-intro-text" class="text-base leading-relaxed text-white min-h-[54px]"></p>
+          </div>
+          <div class="w-full flex flex-col gap-3">
+            <input id="player-name-input" type="text" maxlength="12" placeholder="あなたの名前を入力してください"
+                   class="w-full px-4 py-3 rounded-lg bg-slate-900 border-2 border-slate-400 text-white text-center text-base focus:outline-none focus:border-amber-400">
+            <div id="name-error" class="hidden text-rose-400 text-xs font-bold">名前を入力してください！</div>
+            <button id="submit-name-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+              決定してジョブ診断へ <i class="fa-solid fa-caret-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+      `;
+
+      typeText("kami-intro-text", "勇者よ、旅立ちの前にあなたの能力を見極めるわ。まずは名前を聞かせなさい。", 36);
+
+      const input = document.getElementById("player-name-input");
+      const errEl = document.getElementById("name-error");
+
+      const handleSubmit = () => {
+        const val = input.value.trim();
+        if (!val) {
+          sound.playBuzzer();
+          errEl.classList.remove("hidden");
+          return;
+        }
+        sound.playClick();
+        state.playerName = val;
+        state.jobQIndex = 0;
+        state.jobVotes = { warrior: 0, priest: 0, mage: 0, hero: 0 };
+        renderJobIntro();
+      };
+
+      document.getElementById("submit-name-btn").onclick = handleSubmit;
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") handleSubmit();
+      });
+    }
+
+    /* ==============================================================
+       8. ジョブ決定診断（10問・選択肢ランダム）
+       ============================================================== */
+    function renderJobIntro() {
+      clearAllTimers();
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="w-40 h-40 rounded-xl overflow-hidden border-2 border-amber-300 mb-4 bg-black">
+            <img src="${ASSETS.kamiImg}" alt="神さま" class="w-full h-full object-cover"
+                 onerror="this.src='https://placehold.co/200x200/1e1b4b/facc15?text=GODDESS'">
+          </div>
+          <div class="rpg-window w-full p-4 mb-5 text-left">
+            <div class="text-xs text-amber-300 font-bold mb-1">【神さま】</div>
+            <p id="job-intro-msg" class="text-base leading-relaxed min-h-[60px]"></p>
+          </div>
+          <button id="start-job-q-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+            診断をスタート（全10問）
+          </button>
+        </div>
+      `;
+      typeText("job-intro-msg", `${state.playerName}、これからあなたのジョブ（仕事タイプ）を判別するわ。これから出す10個の質問に直感で答えなさい。`, 34);
+      document.getElementById("start-job-q-btn").onclick = () => {
+        sound.playClick();
+        renderJobQuestion();
+      };
+    }
+
+    function renderJobQuestion() {
+      clearAllTimers();
+      const qData = JOB_QUESTIONS[state.jobQIndex];
+      const shuffledOptions = shuffleArray(qData.options);
+      const progressPct = Math.round(((state.jobQIndex + 1) / JOB_QUESTIONS.length) * 100);
+
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col">
+          <div class="flex items-center justify-between text-xs text-amber-300 mb-2">
+            <span>🔮 ジョブ診断</span>
+            <span>第 ${state.jobQIndex + 1} 問 / 全 ${JOB_QUESTIONS.length} 問</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-4">
+            <div class="bg-amber-400 h-full transition-all duration-300" style="width:${progressPct}%"></div>
+          </div>
+          <div class="rpg-window p-4 mb-4">
+            <p class="text-base sm:text-lg leading-relaxed text-white font-bold">${qData.q}</p>
+          </div>
+          <div id="job-options" class="flex flex-col gap-2.5"></div>
+        </div>
+      `;
+
+      const container = document.getElementById("job-options");
+      shuffledOptions.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "rpg-btn w-full";
+        btn.innerHTML = `<span class="text-amber-300 shrink-0">▶</span><span>${opt.text}</span>`;
+        btn.onclick = () => {
+          sound.playClick();
+          state.jobVotes[opt.job]++;
+          state.jobQIndex++;
+          if (state.jobQIndex < JOB_QUESTIONS.length) {
+            renderJobQuestion();
+          } else {
+            decideJob();
+          }
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function decideJob() {
+      const entries = Object.entries(state.jobVotes);
+      let maxVal = -1;
+      entries.forEach(([, v]) => {
+        if (v > maxVal) maxVal = v;
+      });
+      const topJobs = entries.filter(([, v]) => v === maxVal).map(([k]) => k);
+      // 同点時はバランス型の「勇者」に決定
+      state.jobKey = topJobs.length === 1 ? topJobs[0] : "hero";
+      renderJobResult();
+    }
+
+    function renderJobResult() {
+      clearAllTimers();
+      const job = JOBS[state.jobKey];
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="w-36 h-36 rounded-xl overflow-hidden border-2 border-amber-300 mb-3 bg-black">
+            <img src="${ASSETS.kamiImg}" alt="神さま" class="w-full h-full object-cover"
+                 onerror="this.src='https://placehold.co/180x180/1e1b4b/facc15?text=GODDESS'">
+          </div>
+          <div class="rpg-window-gold w-full p-4 mb-4 text-left">
+            <div class="text-xs text-amber-300 font-bold mb-1">【神さまの診断結果】</div>
+            <p class="text-base sm:text-lg font-bold text-white mb-3">
+              ${state.playerName}の職業は <span class="text-amber-300 text-xl">${job.icon} ${job.name}</span> ね！
+            </p>
+            <div class="bg-slate-900/90 border border-slate-600 rounded-lg p-3 space-y-2 text-sm font-sans">
+              <div><span class="text-amber-300 font-bold">タイプ：</span>${job.subtitle}</div>
+              <div><span class="text-amber-300 font-bold">得意分野：</span>${job.specialty}</div>
+              <div><span class="text-emerald-300 font-bold">固有特性【${job.skillTitle}】：</span>${job.skillDesc}</div>
+            </div>
+          </div>
+          <button id="go-prologue-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+            能力＆アイテム決定へ進む <i class="fa-solid fa-caret-right ml-1"></i>
+          </button>
+        </div>
+      `;
+      sound.playCorrect();
+      document.getElementById("go-prologue-btn").onclick = () => {
+        sound.playClick();
+        state.prologueQIndex = 0;
+        renderPrologueQuestion();
+      };
+    }
+
+    /* ==============================================================
+       9. プロローグ（能力＆アイテム決定：全5問）
+       ============================================================== */
+    function renderPrologueQuestion() {
+      clearAllTimers();
+      if (state.prologueQIndex < PROLOGUE_QUESTIONS.length) {
+        const qData = PROLOGUE_QUESTIONS[state.prologueQIndex];
+        const indexedOptions = shuffleArray(qData.options.map((text, idx) => ({ text, origIdx: idx })));
+
+        const main = document.getElementById("main-screen");
+        main.innerHTML = `
+          <div class="flex flex-col">
+            <div class="flex items-center justify-between text-xs text-sky-300 mb-2">
+              <span>✨ プロローグ：能力決定</span>
+              <span>質問 ${state.prologueQIndex + 1} / 5</span>
+            </div>
+            <div class="rpg-window p-4 mb-4">
+              <div class="text-xs text-amber-300 mb-1">【神さま】次の質問に答えなさい。それによってあなたの装備や能力が決まるわ。</div>
+              <p class="text-base sm:text-lg font-bold text-white leading-relaxed mt-2">${qData.q}</p>
+            </div>
+            <div id="prologue-options" class="flex flex-col gap-2.5"></div>
+          </div>
+        `;
+
+        const container = document.getElementById("prologue-options");
+        indexedOptions.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "rpg-btn w-full";
+          btn.innerHTML = `<span class="text-sky-300 shrink-0">▶</span><span>${opt.text}</span>`;
+          btn.onclick = () => {
+            const isCorrect = opt.origIdx === qData.answer;
+            let bodyMsg = "";
+            if (isCorrect) {
+              sound.playCorrect();
+              state.items[qData.rewardKey]++;
+              bodyMsg = `🎉 正解！\n\n【獲得アイテム】「${qData.rewardName}」をゲット！\n${qData.rewardDesc}\n\n${qData.explain}`;
+            } else {
+              sound.playBuzzer();
+              bodyMsg = `💦 ざんねん、不正解…\n\n${qData.explain}`;
+            }
+            showModal(
+              isCorrect ? "正解＆アイテム獲得！" : "答えと解説",
+              bodyMsg,
+              "次の質問へ",
+              () => {
+                state.prologueQIndex++;
+                renderPrologueQuestion();
+              }
+            );
+          };
+          container.appendChild(btn);
+        });
+      } else {
+        renderPrologueQ5();
+      }
+    }
+
+    function renderPrologueQ5() {
+      clearAllTimers();
+      const shuffledItems = shuffleArray(PROLOGUE_Q5_ITEMS);
+      const selectedSet = new Set();
+
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col">
+          <div class="flex items-center justify-between text-xs text-sky-300 mb-2">
+            <span>✨ プロローグ：初期HP決定</span>
+            <span>質問 5 / 5</span>
+          </div>
+          <div class="rpg-window p-4 mb-3">
+            <p class="text-base sm:text-lg font-bold text-white leading-relaxed">
+              ⑤ 長野県で「生産量が全国1位」のものを<span class="text-amber-300">5つ</span>選んでください！
+            </p>
+            <p class="text-xs text-slate-300 mt-1">※正解数によってあなたの最大HP（30〜100）が決定します。</p>
+          </div>
+          <div class="text-right text-sm font-bold text-amber-300 mb-2">
+            選択中：<span id="q5-count">0</span> / 5 個
+          </div>
+          <div id="q5-grid" class="grid grid-cols-2 gap-2 mb-4"></div>
+          <button id="q5-submit-btn" type="button" disabled class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+            5つ選んで決定する
+          </button>
+        </div>
+      `;
+
+      const grid = document.getElementById("q5-grid");
+      const countEl = document.getElementById("q5-count");
+      const submitBtn = document.getElementById("q5-submit-btn");
+
+      shuffledItems.forEach(itemName => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "p-3 rounded-lg border-2 border-slate-500 bg-slate-900 text-white text-sm font-bold text-center transition active:scale-95";
+        btn.textContent = itemName;
+        btn.onclick = () => {
+          sound.playClick();
+          if (selectedSet.has(itemName)) {
+            selectedSet.delete(itemName);
+            btn.className = "p-3 rounded-lg border-2 border-slate-500 bg-slate-900 text-white text-sm font-bold text-center transition active:scale-95";
+          } else {
+            if (selectedSet.size >= 5) return;
+            selectedSet.add(itemName);
+            btn.className = "p-3 rounded-lg border-2 border-amber-400 bg-amber-500/25 text-amber-200 text-sm font-bold text-center transition active:scale-95";
+          }
+          countEl.textContent = selectedSet.size;
+          submitBtn.disabled = selectedSet.size !== 5;
+          submitBtn.textContent = selectedSet.size === 5 ? "決定してHPを確定する！" : `あと ${5 - selectedSet.size} つ選んでください`;
+        };
+        grid.appendChild(btn);
+      });
+
+      submitBtn.onclick = () => {
+        let correctCount = 0;
+        selectedSet.forEach(name => {
+          if (PROLOGUE_Q5_CORRECT.includes(name)) correctCount++;
+        });
+
+        let hpVal = 30;
+        if (correctCount === 5) hpVal = 100;
+        else if (correctCount >= 3) hpVal = 80;
+        else if (correctCount >= 1) hpVal = 50;
+
+        state.hp = hpVal;
+        state.maxHp = hpVal;
+        sound.playCorrect();
+
+        const explain = `正解の5つは「${PROLOGUE_Q5_CORRECT.join("・")}」です！\n\nあなたの正解数：${correctCount} / 5 問\n決定した初期HP：${hpVal}`;
+        showModal("初期HPが決定しました！", explain, "旅立ちの準備へ", () => {
+          renderPrologueEnd();
+        });
+      };
+    }
+
+    function renderPrologueEnd() {
+      clearAllTimers();
+      const job = JOBS[state.jobKey];
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center py-2">
+          <div class="w-40 h-40 rounded-xl overflow-hidden border-2 border-amber-300 mb-4 bg-black">
+            <img src="${ASSETS.kamiImg}" alt="神さま" class="w-full h-full object-cover"
+                 onerror="this.src='https://placehold.co/180x180/1e1b4b/facc15?text=GODDESS'">
+          </div>
+          <div class="rpg-window-gold w-full p-5 mb-5">
+            <p class="text-xl sm:text-2xl font-bold text-amber-300 mb-3">
+              旅立て、${state.playerName}よ！！！
+            </p>
+            <div class="text-sm text-slate-200 space-y-1 font-sans">
+              <div>ジョブ：${job.icon} ${job.name} ／ 初期HP：<span class="text-emerald-400 font-bold">${state.hp}</span></div>
+              <div>所持アイテム：薬草×${state.items.herb} ／ 魔法の杖×${state.items.wand} ／ 奇跡のリンゴ×${state.items.apple} ／ 復活の書×${state.items.revive}</div>
+            </div>
+          </div>
+          <button id="depart-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-4 text-lg">
+            ⚔️ 旅立ち（本編スタート）
+          </button>
+        </div>
+      `;
+
+      document.getElementById("depart-btn").onclick = () => {
+        sound.playClick();
+        sound.stopBgm();
+        state.monsterIndex = 0;
+        state.questionIndex = 0;
+        state.merchantDone = false;
+        showHud();
+        renderMonsterBattle();
+      };
+    }
+
+    /* ==============================================================
+       10. 本編バトル（魔物1〜5）
+       ============================================================== */
+    function renderMonsterBattle() {
+      clearAllTimers();
+      const monster = MONSTERS[state.monsterIndex];
+      if (!monster) {
+        renderEnding();
+        return;
+      }
+
+      const qObj = monster.questions[state.questionIndex];
+      state.inBattle = true;
+      state.wandUsedOnCurrentQ = false;
+      state.lastCheckpoint = { type: "battle", monsterIndex: state.monsterIndex, questionIndex: state.questionIndex };
+
+      // 魔物5（大魔王）の時は専用BGMを流す
+      if (monster.isMaou) {
+        sound.playBgm("maou");
+      }
+
+      updateHud();
+
+      const isFirstQOfMonster = state.questionIndex === 0;
+      const maouAnimClass = monster.isMaou && isFirstQOfMonster ? "maou-fadein" : "";
+
+      // 選択肢をシャッフル
+      const shuffledOptions = shuffleArray(qObj.options.map((text, idx) => ({ text, origIdx: idx })));
+
+      // 魔法使い特性：5択のうち最初からハズレを1つ消去
+      let mageEliminatedIdx = -1;
+      if (state.jobKey === "mage" && shuffledOptions.length >= 5) {
+        const wrongs = shuffledOptions.filter(o => o.origIdx !== qObj.answer);
+        if (wrongs.length > 0) {
+          mageEliminatedIdx = wrongs[Math.floor(Math.random() * wrongs.length)].origIdx;
+        }
+      }
+
+      // 参考企業HPボタン（ヤッホーブルーイング、パスカルなど問題文の企業用）
+      let refHpHtml = "";
+      if (qObj.refCompany && COMPANY_LINKS[qObj.refCompany]) {
+        refHpHtml = `
+          <div class="mt-2.5 flex justify-end">
+            <a href="${COMPANY_LINKS[qObj.refCompany]}" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-800 border border-sky-400 text-white text-xs font-bold hover:bg-sky-700">
+              <i class="fa-solid fa-up-right-from-square"></i> ${qObj.refCompany} HP
+            </a>
+          </div>
+        `;
+      }
+
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col">
+          <!-- 魔物表示エリア -->
+          <div class="flex flex-col items-center justify-center py-2 mb-3 bg-gradient-to-b from-slate-900/90 to-black rounded-lg border border-slate-700 min-h-[190px] relative">
+            <div class="absolute top-2 left-2.5 text-xs px-2 py-0.5 rounded bg-slate-800/90 border border-slate-600 text-amber-300 font-bold">
+              STAGE ${state.monsterIndex + 1} / ${MONSTERS.length}
+            </div>
+            <div class="absolute top-2 right-2.5 text-xs text-slate-400 font-bold">
+              ${monster.questions.length > 1 ? `第 ${state.questionIndex + 1} / ${monster.questions.length} 問` : "一撃必殺！"}
+            </div>
+            <div id="monster-slash-box" class="slash-container mt-4">
+              <div class="slash-line"></div>
+              <img id="monster-img" src="${monster.img}" alt="${monster.name}"
+                   class="max-h-[155px] w-auto object-contain ${maouAnimClass}"
+                   onerror="this.src='https://placehold.co/220x160/1e293b/f43f5e?text=${encodeURIComponent(monster.name)}'">
+            </div>
+            <div class="text-sm sm:text-base font-bold text-rose-300 mt-2">
+              ${isFirstQOfMonster ? `⚠️ ${monster.name}が現れた！` : `⚔️ ${monster.name}と戦闘中！`}
+            </div>
+          </div>
+
+          <!-- 問題文ウィンドウ -->
+          <div class="rpg-window p-3.5 sm:p-4 mb-3">
+            <p class="text-sm sm:text-base leading-relaxed text-white font-bold">${qObj.q}</p>
+            ${refHpHtml}
+          </div>
+
+          ${mageEliminatedIdx !== -1 ? `<div class="text-xs text-purple-300 mb-2 px-1">🔮 魔法使いの特性【データ解析】発動！ハズレを1つ消去した！</div>` : ""}
+
+          <!-- 選択肢エリア -->
+          <div id="battle-options" class="flex flex-col gap-2"></div>
+        </div>
+      `;
+
+      const optionsBox = document.getElementById("battle-options");
+      shuffledOptions.forEach(opt => {
+        const row = document.createElement("div");
+        row.className = "flex items-stretch gap-1.5";
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "rpg-btn flex-1 battle-option-btn";
+        btn.dataset.origIdx = opt.origIdx;
+        btn.innerHTML = `<span class="text-amber-300 shrink-0">▶</span><span>${opt.text}</span>`;
+
+        if (opt.origIdx === mageEliminatedIdx) {
+          btn.disabled = true;
+        }
+
+        btn.onclick = () => handleBattleAnswer(opt.origIdx, btn);
+        row.appendChild(btn);
+
+        // 選択肢が企業名に一致する場合は横に「HP」リンクボタンを表示
+        if (COMPANY_LINKS[opt.text]) {
+          const link = document.createElement("a");
+          link.href = COMPANY_LINKS[opt.text];
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.className = "hp-link-btn";
+          link.textContent = "HP";
+          link.title = `${opt.text}の公式サイトを開く`;
+          row.appendChild(link);
+        }
+
+        optionsBox.appendChild(row);
+      });
+    }
+
+    function handleBattleAnswer(selectedOrigIdx, clickedBtn) {
+      const monster = MONSTERS[state.monsterIndex];
+      const qObj = monster.questions[state.questionIndex];
+
+      if (selectedOrigIdx === qObj.answer) {
+        // 正解：ボタン全ロック
+        document.querySelectorAll(".battle-option-btn").forEach(b => (b.disabled = true));
+        state.inBattle = false;
+
+        // スコア＆ジョブ特性計算
+        let gainedScore = 100;
+        let isCritical = false;
+
+        if (state.jobKey === "warrior" && qObj.category === "warrior") {
+          gainedScore = 150;
+          isCritical = true;
+        } else if (state.jobKey === "priest" && qObj.category === "priest") {
+          gainedScore = 130;
+          isCritical = true;
+        } else if (state.jobKey === "mage" && qObj.category === "mage") {
+          gainedScore = 130;
+          isCritical = true;
+        } else if (state.jobKey === "hero") {
+          gainedScore = 120;
+        }
+
+        state.score += gainedScore;
+        updateHud();
+
+        const isLastQOfMonster = state.questionIndex === monster.questions.length - 1;
+        const imgEl = document.getElementById("monster-img");
+        const slashBox = document.getElementById("monster-slash-box");
+
+        if (isCritical) {
+          showBanner(`⚡ 会心の一撃！ +${gainedScore} SCORE！`, "text-yellow-300 border-yellow-300");
+        } else {
+          showBanner(`✨ 正解！ +${gainedScore} SCORE！`, "text-emerald-300 border-emerald-400");
+        }
+
+        if (isLastQOfMonster) {
+          sound.playSlash();
+          if (slashBox) slashBox.classList.add("slash-active");
+          if (imgEl) imgEl.classList.add("monster-sliced");
+        } else {
+          sound.playCorrect();
+          if (imgEl) imgEl.classList.add("monster-damage");
+        }
+
+        const proceedNext = () => {
+          if (!isLastQOfMonster) {
+            state.questionIndex++;
+            renderMonsterBattle();
+          } else {
+            // 僧侶特性：ステージクリアごとにHP+5自動回復
+            if (state.jobKey === "priest" && state.hp < state.maxHp) {
+              state.hp = Math.min(state.maxHp, state.hp + 5);
+              updateHud();
+              showBanner("✨ 僧侶【おもてなしの心】HPが5自動回復した！", "text-emerald-300 border-emerald-400");
+            }
+
+            // 魔物3（index 2）を倒した直後に商人ステージへ
+            if (state.monsterIndex === 2 && !state.merchantDone) {
+              renderMerchantIntro();
+            } else {
+              state.monsterIndex++;
+              state.questionIndex = 0;
+              if (state.monsterIndex >= MONSTERS.length) {
+                renderEnding();
+              } else {
+                renderMonsterBattle();
+              }
+            }
+          }
+        };
+
+        const delay = isLastQOfMonster ? 950 : 700;
+        const t = setTimeout(() => {
+          if (qObj.explanation) {
+            showModal(
+              qObj.explanationTitle || "解説",
+              qObj.explanation,
+              isLastQOfMonster && state.monsterIndex === MONSTERS.length - 1 ? "エンディングへ" : "次へ進む",
+              proceedNext
+            );
+          } else {
+            proceedNext();
+          }
+        }, delay);
+        activeTimers.push(t);
+      } else {
+        // 不正解：ブブ！＆HP-10
+        sound.playBuzzer();
+        clickedBtn.disabled = true;
+        state.hp = Math.max(0, state.hp - 10);
+        updateHud();
+
+        const body = document.getElementById("game-body");
+        body.classList.remove("player-damaged");
+        void body.offsetWidth;
+        body.classList.add("player-damaged");
+
+        showBanner("💥 ブブ！不正解… HPが10減った！", "text-rose-300 border-rose-500");
+
+        if (state.hp <= 0) {
+          const t = setTimeout(() => {
+            renderGameOver();
+          }, 550);
+          activeTimers.push(t);
+        }
+      }
+    }
+
+    /* ==============================================================
+       11. 商人ステージ（ブレイクタイム：労働問題ミニゲーム）
+       ============================================================== */
+    function renderMerchantIntro() {
+      clearAllTimers();
+      state.inBattle = false;
+      state.merchantClearedCount = 0;
+      state.lastCheckpoint = { type: "merchant" };
+
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="text-xs px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400 text-amber-300 font-bold mb-3">
+            💰 ブレイクタイム：怪しい商人ステージ
+          </div>
+          <div class="w-48 h-48 rounded-xl overflow-hidden border-2 border-amber-400 shadow-lg mb-4 bg-black">
+            <img src="${ASSETS.merchantImg}" alt="怪しい商人" class="w-full h-full object-cover"
+                 onerror="this.src='https://placehold.co/240x240/451a03/facc15?text=MERCHANT'">
+          </div>
+          <div class="rpg-window w-full p-4 mb-5 text-left space-y-2">
+            <div class="text-xs text-amber-300 font-bold">【怪しい商人】</div>
+            <p class="text-sm sm:text-base leading-relaxed text-white">
+              「なあなあ、${state.playerName}よ！モンスター退治も大変だろ？手っ取り早くアルバイトで稼がねえか？」
+            </p>
+            <p class="text-xs sm:text-sm text-slate-300 pt-1">
+              とりあえずアルバイトをしようと思いますが、なんだか条件が怪しい…！<br>
+              労働法の知識を使って、商人のワナを見破ろう！（全3問）
+            </p>
+          </div>
+          <button id="start-merchant-g1-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+            ゲーム１：怪しい契約書を見破れ！へ
+          </button>
+        </div>
+      `;
+
+      document.getElementById("start-merchant-g1-btn").onclick = () => {
+        sound.playClick();
+        renderMerchantGame1Ready();
+      };
+    }
+
+    function renderMerchantGame1Ready() {
+      clearAllTimers();
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="text-xs text-amber-300 font-bold mb-2">【商人ゲーム１】怪しい契約書を見破れ！</div>
+          <div class="rpg-window w-full p-4 mb-5 text-left text-sm sm:text-base leading-relaxed">
+            商人が差し出すアルバイト契約書の中に、<span class="text-rose-400 font-bold">法律違反の条件</span>が紛れ込んでいます！<br><br>
+            ・制限時間は <span class="text-amber-300 font-bold">30秒</span><br>
+            ・違反だと思う項目をすべてタップして<span class="text-rose-400 font-bold">赤丸</span>をつけ、「OK」ボタンを押してください。<br>
+            ・間違った組み合わせでOKを押すと赤丸がリセットされます！
+          </div>
+          <button id="contract-start-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-4 text-lg">
+            スタート！（カウントダウン開始）
+          </button>
+        </div>
+      `;
+
+      document.getElementById("contract-start-btn").onclick = () => {
+        sound.playClick();
+        let count = 3;
+        main.innerHTML = `
+          <div class="flex flex-col items-center justify-center min-h-[280px]">
+            <div class="text-sm text-amber-300 mb-3">商人が契約書を広げている…</div>
+            <div id="countdown-num" class="text-7xl font-black text-yellow-300">${count}</div>
+          </div>
+        `;
+        const cdTimer = setInterval(() => {
+          count--;
+          if (count > 0) {
+            sound.playPip();
+            const el = document.getElementById("countdown-num");
+            if (el) el.textContent = count;
+          } else {
+            clearInterval(cdTimer);
+            sound.playCorrect();
+            renderMerchantGame1Play();
+          }
+        }, 700);
+        activeTimers.push(cdTimer);
+      };
+    }
+
+    function renderMerchantGame1Play() {
+      clearAllTimers();
+      let timeLeft = 30;
+      const circledIds = new Set();
+
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs sm:text-sm font-bold text-amber-300">📜 商人のアルバイト契約書</span>
+            <span id="contract-timer" class="px-3 py-1 rounded-full bg-rose-900 border border-rose-400 text-white font-black text-sm">
+              残り 30 秒
+            </span>
+          </div>
+          <p class="text-xs text-slate-300 mb-2">商人「さあ、サインしな！最高条件だぜ！」（法律違反をタップして赤丸をつけろ！）</p>
+
+          <div class="contract-scroll p-3.5 sm:p-4 mb-3">
+            <div class="text-center font-black text-base sm:text-lg border-b-2 border-amber-900/40 pb-2 mb-3 text-amber-950">
+              アルバイト雇用契約書
+            </div>
+            <div id="contract-items-list" class="flex flex-col gap-2"></div>
+          </div>
+
+          <div id="contract-feedback" class="text-center text-xs font-bold text-rose-400 min-h-[20px] mb-2"></div>
+
+          <button id="contract-ok-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+            これでOK！（違反を指摘する）
+          </button>
+        </div>
+      `;
+
+      const listEl = document.getElementById("contract-items-list");
+      const feedbackEl = document.getElementById("contract-feedback");
+      const timerEl = document.getElementById("contract-timer");
+
+      const renderItems = () => {
+        listEl.innerHTML = "";
+        MERCHANT_CONTRACT_ITEMS.forEach(item => {
+          const div = document.createElement("div");
+          div.className = `contract-item ${circledIds.has(item.id) ? "circled" : ""}`;
+          div.innerHTML = `
+            <span class="font-bold text-sm sm:text-base">・${item.text}</span>
+            <div class="red-circle-mark"></div>
+          `;
+          div.onclick = () => {
+            sound.playClick();
+            if (circledIds.has(item.id)) circledIds.delete(item.id);
+            else circledIds.add(item.id);
+            renderItems();
+          };
+          listEl.appendChild(div);
+        });
+      };
+
+      renderItems();
+
+      const contractExplain =
+        "【正解の違反箇所：3つ】\n" +
+        "① 時給1000円：最低賃金違反！長野県の最低賃金（1170円）を下回っています。\n" +
+        "② 自腹清算：NG！わざと会社の物を壊した等の特別な場合を除き、計算ミス等を給料から天引き・自腹清算させるのは違法です。\n" +
+        "③ 1日ごとに給与見直し：金額を上げるのはOKですが、成績を理由に一方的に条件を引き下げるのは非常に難しく、違法になりやすいです。";
+
+      const timerId = setInterval(() => {
+        timeLeft--;
+        if (timerEl) timerEl.textContent = `残り ${timeLeft} 秒`;
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          sound.playBuzzer();
+          showModal("時間切れ！契約書の解説", contractExplain, "ゲーム２へ進む", () => {
+            renderMerchantDebate(0);
+          });
+        }
+      }, 1000);
+      activeTimers.push(timerId);
+
+      document.getElementById("contract-ok-btn").onclick = () => {
+        const expectedIds = MERCHANT_CONTRACT_ITEMS.filter(i => i.isViolation).map(i => i.id);
+        const isAllCorrect =
+          circledIds.size === expectedIds.length &&
+          expectedIds.every(id => circledIds.has(id));
+
+        if (isAllCorrect) {
+          clearInterval(timerId);
+          sound.playCorrect();
+          state.merchantClearedCount++;
+          state.score += 100;
+          updateHud();
+          showModal("見破った！契約書の解説", contractExplain, "ゲーム２へ進む", () => {
+            renderMerchantDebate(0);
+          });
+        } else {
+          sound.playBuzzer();
+          circledIds.clear();
+          renderItems();
+          feedbackEl.textContent = "❌ 組み合わせが違います！赤丸がリセットされました。もう一度選び直してください！";
+        }
+      };
+    }
+
+    function renderMerchantDebate(debateIdx) {
+      clearAllTimers();
+      const dData = MERCHANT_DEBATES[debateIdx];
+      const main = document.getElementById("main-screen");
+
+      main.innerHTML = `
+        <div class="flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-amber-300">⚖️ ゲーム２：商人の言い訳を論破しろ！（${debateIdx + 1}/2）</span>
+            <span id="debate-timer" class="hidden px-3 py-1 rounded-full bg-rose-900 border border-rose-400 text-white font-black text-xs">
+              残り 30 秒
+            </span>
+          </div>
+          <div class="rpg-window p-4 mb-4">
+            <div class="text-xs text-sky-300 font-bold mb-1">${dData.title}</div>
+            <p class="text-sm sm:text-base leading-relaxed text-white whitespace-pre-line">${dData.story}</p>
+          </div>
+          <button id="show-debate-options-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+            選択肢を表示する（30秒タイマー開始）
+          </button>
+          <div id="debate-options" class="hidden flex flex-col gap-2.5 mt-2"></div>
+        </div>
+      `;
+
+      document.getElementById("show-debate-options-btn").onclick = () => {
+        sound.playClick();
+        document.getElementById("show-debate-options-btn").classList.add("hidden");
+        const timerEl = document.getElementById("debate-timer");
+        const optBox = document.getElementById("debate-options");
+        timerEl.classList.remove("hidden");
+        optBox.classList.remove("hidden");
+
+        let timeLeft = 30;
+        const goNext = () => {
+          if (debateIdx + 1 < MERCHANT_DEBATES.length) {
+            renderMerchantDebate(debateIdx + 1);
+          } else {
+            finishMerchantStage();
+          }
+        };
+
+        const timerId = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `残り ${timeLeft} 秒`;
+          if (timeLeft <= 0) {
+            clearInterval(timerId);
+            sound.playBuzzer();
+            showModal("時間切れ！解説", dData.explanation, "次へ進む", goNext);
+          }
+        }, 1000);
+        activeTimers.push(timerId);
+
+        // 番号やアルファベットを付けずにランダム表示
+        const shuffled = shuffleArray(dData.options.map((text, idx) => ({ text, origIdx: idx })));
+        shuffled.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "rpg-btn w-full";
+          btn.innerHTML = `<span class="text-amber-300 shrink-0">▶</span><span>${opt.text}</span>`;
+          btn.onclick = () => {
+            clearInterval(timerId);
+            if (opt.origIdx === dData.answer) {
+              sound.playCorrect();
+              state.merchantClearedCount++;
+              state.score += 100;
+              updateHud();
+              showModal("見事論破！正解＆解説", dData.explanation, "次へ進む", goNext);
+            } else {
+              sound.playBuzzer();
+              showModal("論破失敗… 正解と解説", dData.explanation, "次へ進む", goNext);
+            }
+          };
+          optBox.appendChild(btn);
+        });
+      };
+    }
+
+    function finishMerchantStage() {
+      clearAllTimers();
+      state.merchantDone = true;
+      const allCleared = state.merchantClearedCount === 3;
+      let resultTitle = "";
+      let resultBody = "";
+
+      if (allCleared) {
+        const heal = Math.max(10, Math.round(state.hp * 0.2));
+        state.hp = Math.min(state.maxHp, state.hp + heal);
+        sound.playHeal();
+        resultTitle = "商人ステージ完全攻略！";
+        resultBody = `バイト代でおもいっきり飲食をして、HPが回復した！（HP +${heal}）\n\nさあ、いよいよ後半戦・ドラゴンが待ち受けているぞ！`;
+      } else {
+        const dmg = Math.max(5, Math.round(state.hp * 0.3));
+        state.hp = Math.max(0, state.hp - dmg);
+        sound.playBuzzer();
+        resultTitle = "商人ステージ終了…";
+        resultBody = `ブラックバイトでメンタル削られた！（クリア数：${state.merchantClearedCount}/3、HP -${dmg}）\n\n気を取り直して後半戦へ進もう！`;
+      }
+      updateHud();
+
+      showModal(resultTitle, resultBody, state.hp <= 0 ? "次へ" : "魔物④ドラゴンへ進む", () => {
+        if (state.hp <= 0) {
+          state.lastCheckpoint = { type: "battle", monsterIndex: 3, questionIndex: 0 };
+          renderGameOver();
+        } else {
+          state.monsterIndex = 3;
+          state.questionIndex = 0;
+          renderMonsterBattle();
+        }
+      });
+    }
+
+    /* ==============================================================
+       12. ゲームオーバー画面（復活の書 ＆ 復活の呪文「1126」）
+       ============================================================== */
+    function renderGameOver() {
+      clearAllTimers();
+      state.inBattle = false;
+      hideHud();
+      sound.playBgm("over");
+
+      const job = JOBS[state.jobKey] || JOBS.hero;
+      const hasRevive = state.items.revive > 0;
+
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="text-rose-400 font-black text-xl tracking-widest mb-3">GAME OVER</div>
+          <div class="w-full rounded-lg overflow-hidden border-2 border-rose-500/80 mb-4 bg-black">
+            <img src="${ASSETS.overImg}" alt="ゲームオーバー" class="w-full max-h-[240px] object-contain mx-auto"
+                 onerror="this.src='https://placehold.co/560x240/1f0000/f43f5e?text=GAME+OVER'">
+          </div>
+          <div class="rpg-window w-full p-4 mb-4 text-left">
+            <p class="text-sm sm:text-base leading-relaxed text-rose-100">
+              ${job.name} ${state.playerName}よ、死んでしまうとはふがいない。このままでは信濃の平和は取り返せない。何としても再挑戦をしてほしい！
+            </p>
+          </div>
+
+          <div class="w-full flex flex-col gap-3">
+            ${hasRevive ? `
+              <button id="use-revive-book-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-base">
+                📖 復活の書を使う（残り ${state.items.revive} 冊）
+              </button>
+            ` : ""}
+
+            <!-- 復活の呪文入力エリア -->
+            <div class="rpg-window p-3.5 text-left">
+              <div class="text-xs sm:text-sm font-bold text-amber-300 mb-2">
+                🔮 復活の呪文は講師に聞け！
+              </div>
+              <div class="flex gap-2">
+                <input id="revive-spell-input" type="text" inputmode="numeric" maxlength="8" placeholder="呪文を入力"
+                       class="flex-1 px-3 py-2.5 rounded-lg bg-slate-900 border-2 border-slate-500 text-white text-center font-bold focus:outline-none focus:border-amber-400">
+                <button id="revive-spell-btn" type="button" class="rpg-btn px-5 py-2.5 justify-center font-bold text-amber-300 border-amber-400">
+                  唱える
+                </button>
+              </div>
+              <div id="spell-error" class="hidden text-xs text-rose-400 font-bold mt-1.5">呪文が違うようだ…講師に聞いてみよう！</div>
+            </div>
+
+            <button id="restart-from-top-btn" type="button" class="rpg-btn w-full justify-center py-3 text-base">
+              <i class="fa-solid fa-rotate-left"></i> 最初から挑戦する
+            </button>
+          </div>
+        </div>
+      `;
+
+      const reviveToCheckpoint = (msg) => {
+        sound.stopBgm();
+        sound.playHeal();
+        state.hp = Math.max(30, Math.round(state.maxHp * 0.5));
+        showHud();
+        showBanner(msg, "text-amber-300 border-amber-400");
+
+        if (state.lastCheckpoint && state.lastCheckpoint.type === "battle") {
+          state.monsterIndex = state.lastCheckpoint.monsterIndex;
+          state.questionIndex = state.lastCheckpoint.questionIndex;
+          renderMonsterBattle();
+        } else {
+          renderMerchantIntro();
+        }
+      };
+
+      const reviveBookBtn = document.getElementById("use-revive-book-btn");
+      if (reviveBookBtn) {
+        reviveBookBtn.onclick = () => {
+          state.items.revive--;
+          reviveToCheckpoint("📖 復活の書が光り輝いた！HPを回復して再挑戦！");
+        };
+      }
+
+      const spellInput = document.getElementById("revive-spell-input");
+      const spellErr = document.getElementById("spell-error");
+      const trySpell = () => {
+        const val = spellInput.value.trim();
+        if (val === "1126") {
+          reviveToCheckpoint("✨ 復活の呪文が発動！その問題から再スタート！");
+        } else {
+          sound.playBuzzer();
+          spellErr.classList.remove("hidden");
+        }
+      };
+
+      document.getElementById("revive-spell-btn").onclick = trySpell;
+      spellInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") trySpell();
+      });
+
+      document.getElementById("restart-from-top-btn").onclick = () => {
+        sound.playClick();
+        resetAllState();
+        renderTitle1();
+      };
+    }
+
+    /* ==============================================================
+       13. エンディング画面（紙吹雪・祝福メッセージ）
+       ============================================================== */
+    function renderEnding() {
+      clearAllTimers();
+      state.inBattle = false;
+      hideHud();
+      sound.playBgm("ending");
+      spawnConfetti();
+
+      const job = JOBS[state.jobKey] || JOBS.hero;
+      const main = document.getElementById("main-screen");
+      main.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+          <div class="text-amber-300 text-lg sm:text-xl font-black tracking-widest mb-3 sparkle">
+            ✨ QUEST CLEAR!! ✨
+          </div>
+
+          <div class="w-full rounded-lg overflow-hidden border-2 border-amber-300 shadow-[0_0_30px_rgba(250,204,21,0.45)] mb-4 bg-black">
+            <img src="${ASSETS.endingImg}" alt="エンディング" class="w-full max-h-[280px] object-contain mx-auto"
+                 onerror="this.src='https://placehold.co/560x280/0f172a/facc15?text=HAPPY+ENDING'">
+          </div>
+
+          <div class="rpg-window-gold w-full p-4 mb-4 text-left">
+            <div class="text-xs text-amber-300 font-bold mb-1.5">【伝説の記録】</div>
+            <p id="ending-message" class="text-sm sm:text-base leading-relaxed text-white min-h-[100px]"></p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 w-full mb-5">
+            <div class="rpg-window p-2.5">
+              <div class="text-[10px] text-slate-400">ジョブ・名前</div>
+              <div class="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 truncate">${job.icon} ${job.name}<br>${state.playerName}</div>
+            </div>
+            <div class="rpg-window p-2.5">
+              <div class="text-[10px] text-slate-400">残りHP</div>
+              <div class="text-sm sm:text-base font-bold text-emerald-400 mt-1">${state.hp} / ${state.maxHp}</div>
+            </div>
+            <div class="rpg-window p-2.5">
+              <div class="text-[10px] text-slate-400">最終スコア</div>
+              <div class="text-sm sm:text-base font-black text-yellow-300 mt-1">${state.score}</div>
+            </div>
+          </div>
+
+          <button id="back-to-top-btn" type="button" class="rpg-btn rpg-btn-primary w-full py-3.5 text-lg">
+            <i class="fa-solid fa-house mr-1"></i> 最初に戻る
+          </button>
+        </div>
+      `;
+
+      const praiseText = `${job.name}・${state.playerName}よ！あなたの知恵と地元企業・労働法への深い理解によって大魔王は打ち倒され、信濃の森に再び平和が戻った！長野県には世界に誇る技術やサービスを持つ魅力的な企業がたくさんある。${state.playerName}のこれからのキャリアにも、輝かしい未来が広がっているぞ。ありがとう、信濃を救った英雄 ${state.playerName}よ！！`;
+      typeText("ending-message", praiseText, 38);
+
+      document.getElementById("back-to-top-btn").onclick = () => {
+        sound.playClick();
+        clearConfetti();
+        resetAllState();
+        renderTitle1();
+      };
+    }
+
+    function spawnConfetti() {
+      clearConfetti();
+      const colors = ["#facc15", "#38bdf8", "#f43f5e", "#34d399", "#c084fc"];
+      for (let i = 0; i < 32; i++) {
+        const div = document.createElement("div");
+        div.className = "confetti";
+        div.style.left = `${Math.random() * 100}vw`;
+        div.style.backgroundColor = colors[i % colors.length];
+        div.style.animationDuration = `${2.5 + Math.random() * 3}s`;
+        div.style.animationDelay = `${Math.random() * 2}s`;
+        document.body.appendChild(div);
+      }
+    }
+
+    function clearConfetti() {
+      document.querySelectorAll(".confetti").forEach(el => el.remove());
+    }
+
+    /* ==============================================================
+       14. 初期起動（DOMContentLoaded で即座に開始）
+       ============================================================== */
+    document.addEventListener("DOMContentLoaded", () => {
+      preloadImagesSafely();
+      resetAllState();
+
+      const muteBtn = document.getElementById("mute-toggle-btn");
+      const muteIcon = document.getElementById("mute-icon");
+      const muteLabel = document.getElementById("mute-label");
+      if (muteBtn) {
+        muteBtn.onclick = () => {
+          const muted = sound.toggleMute();
+          muteIcon.className = muted
+            ? "fa-solid fa-volume-xmark text-rose-400"
+            : "fa-solid fa-volume-high text-amber-300";
+          muteLabel.textContent = muted ? "BGM OFF" : "BGM ON";
+        };
+      }
+
+      renderTitle1();
+    });
+  </script>
+</body>
+</html>
